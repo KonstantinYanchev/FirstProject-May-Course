@@ -14,6 +14,34 @@ class Program
     static int firstPlayerPoints = 0;
     static int secondPlayerPoints = 0;
     static Random move = new Random();
+
+    static void Main()
+    {
+        RemoveScrollBars();
+        while (true)
+        {
+            if (Console.KeyAvailable)
+            {
+                ConsoleKeyInfo keys = Console.ReadKey();
+                if (keys.Key == ConsoleKey.UpArrow)
+                {
+                    FirstPlayerUp();
+                }
+                if (keys.Key == ConsoleKey.DownArrow)
+                {
+                    FirstPlayerDown();
+                }
+            }
+            SecondPlayerMovement();
+            BallMovement();
+            Console.Clear();
+            DrawFirstPlayer();
+            DrawSecondPlayer();
+            DrawBall();
+            Results();
+            Thread.Sleep(60);
+        }
+    }
     static void RemoveScrollBars()
     {
         Console.BufferWidth = Console.WindowWidth;
@@ -90,7 +118,7 @@ class Program
         }
     }
 
-    static void SecondPlayerMovemend()
+    static void SecondPlayerMovement()
     {
         int randomNum = move.Next(0, 2);
         //if (randomNum == 0)
@@ -103,7 +131,7 @@ class Program
         //}
         if (randomNum == 0)//without this if YOU NEVER WIN.With this if you have 50%
         {
-            if (ballUp == true) 
+            if (ballUp == true)
             {
                 SecondPlayerUp();
             }
@@ -115,7 +143,7 @@ class Program
 
     }
 
-    static void BallMovemend()
+    static void BallMovement()
     {
         if (ballPositionY == 0)
         {
@@ -145,7 +173,7 @@ class Program
 
         if (ballPositionX < 3)
         {
-            if (ballPositionY >= firstPlayerPosition&&ballPositionY<=firstPlayerPosition+firstPlayerPlankSize)
+            if (ballPositionY >= firstPlayerPosition && ballPositionY <= firstPlayerPosition + firstPlayerPlankSize)
             {
                 ballDown = true;
             }
@@ -176,33 +204,6 @@ class Program
             ballPositionX--;
         }
 
-    }
-    static void Main()
-    {
-        RemoveScrollBars();
-        while (true)
-        {
-            if (Console.KeyAvailable)
-            {
-                ConsoleKeyInfo keys = Console.ReadKey();
-                if (keys.Key == ConsoleKey.UpArrow)
-                {
-                    FirstPlayerUp();
-                }
-                if (keys.Key == ConsoleKey.DownArrow)
-                {
-                    FirstPlayerDown();
-                }
-            }
-            BallMovemend();
-            SecondPlayerMovemend();
-            Console.Clear();
-            DrawFirstPlayer();
-            DrawSecondPlayer();
-            DrawBall();
-            Results();
-            Thread.Sleep(60);
-        }
     }
 }
 
