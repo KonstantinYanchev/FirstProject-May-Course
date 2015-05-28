@@ -3,49 +3,57 @@ using System.Threading;
 
 class Program
 {
+    // Глобални променливи, за да може да се използват във всеки метод без да се деклалират всеки път;
     static int firstPlayerPlankSize = 8;
     static int secondPlayerPlankSize = 8;
-    static int ballPositionX = Console.WindowWidth / 2;//middle ball position on the console
-    static int ballPositionY = Console.WindowHeight / 2;//middle ball position on the console
+    static int ballPositionX = Console.WindowWidth / 2; //Задава за позиция на топчето центъра на конзолата;
+    static int ballPositionY = Console.WindowHeight / 2; //Задава за позиция на топчето центъра на конзолата;
     static bool ballUp = true;
     static bool ballDown = true;
-    static int firstPlayerPosition = (Console.WindowHeight / 2) - (firstPlayerPlankSize / 2);//Middle position of the console.
-    static int secondPlayerPosition = (Console.WindowHeight / 2) - (firstPlayerPlankSize / 2);//Middle position of the console.
+    static int firstPlayerPosition = (Console.WindowHeight / 2) - (firstPlayerPlankSize / 2);//Гарантира, че дъските ще бъдат изчертани на средата;
+    static int secondPlayerPosition = (Console.WindowHeight / 2) - (firstPlayerPlankSize / 2);//Гарантира, че дъските ще бъдат изчертани на средата;
     static int firstPlayerPoints = 0;
     static int secondPlayerPoints = 0;
-    static Random move = new Random();
+    static Random RandomMoveGenerator = new Random();
 
     static void Main()
     {
         RemoveScrollBars();
+        ChangeFontColor();
         while (true)
         {
-            if (Console.KeyAvailable)
+            if (Console.KeyAvailable) // Без този if, конзолата винаги ще забива след всяко завъртане на цикъла, защото ще чака да прочете някакво копче;
             {
                 ConsoleKeyInfo keys = Console.ReadKey();
                 if (keys.Key == ConsoleKey.UpArrow)
                 {
-                    FirstPlayerUp();
+                    MoveFirstPlayerUp();
                 }
                 if (keys.Key == ConsoleKey.DownArrow)
                 {
-                    FirstPlayerDown();
+                    MoveFirstPlayerDown();
                 }
             }
             SecondPlayerMovement();
             BallMovement();
-            Console.Clear();
+            Console.Clear(); // Изчистваме и преначертаваме всичко отново, за да отразим движението на играчите и топчето;
             DrawFirstPlayer();
             DrawSecondPlayer();
             DrawBall();
-            Results();
-            Thread.Sleep(60);
+            PrintResult();
+            Thread.Sleep(40);
         }
     }
+
     static void RemoveScrollBars()
     {
         Console.BufferWidth = Console.WindowWidth;
         Console.BufferHeight = Console.WindowHeight;
+    }
+
+    static void ChangeFontColor()
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
     }
 
     static void DrawFirstPlayer()
@@ -72,7 +80,7 @@ class Program
         Console.Write(plankSymbol);
     }
 
-    static void IfLoseBallInTheMiddle()
+    static void IfSomeoneLoseSetBallInMid()
     {
         ballPositionX = Console.WindowWidth / 2;//middle ball position on the console
         ballPositionY = Console.WindowHeight / 2;//middle ball position on the console
@@ -82,22 +90,22 @@ class Program
         PrintAtPosition(ballPositionX, ballPositionY, '*');
     }
 
-    static void Results()
+    static void PrintResult()
     {
         Console.SetCursorPosition(Console.WindowWidth / 2 - 1, 0);
         Console.Write("{0}-{1}", firstPlayerPoints, secondPlayerPoints);
     }
 
-    static void FirstPlayerDown()
+    static void MoveFirstPlayerDown()
     {
         if (firstPlayerPosition < Console.WindowHeight - firstPlayerPlankSize)
         {
             firstPlayerPosition++;
         }
     }
-    static void FirstPlayerUp()
+    static void MoveFirstPlayerUp()
     {
-        if (firstPlayerPosition > 0)
+        if (firstPlayerPosition > 0) // С цел да не излизаме извън конзолата и да ни гърми;
         {
             firstPlayerPosition--;
         }
@@ -120,7 +128,7 @@ class Program
 
     static void SecondPlayerMovement()
     {
-        int randomNum = move.Next(0, 2);
+        int randomNum = RandomMoveGenerator.Next(0, 2);
         //if (randomNum == 0)
         //{
         //    SecondPlayerUp();
@@ -147,26 +155,31 @@ class Program
     {
         if (ballPositionY == 0)
         {
-            ballUp = false;
+            ballUp = false; // За да накараме топчето, когато е стигнало до горния ръб на конзолата, да започне да се движи надолу;
         }
-        if (ballPositionY == Console.WindowHeight - 1)
+        if (ballPositionY == Console.WindowHeight - 1) // За да накараме топчето, когато е стигнало до долния ръб на конзолата, да започне да се движи нагоре;
         {
             ballUp = true;
         }
-        if (ballPositionX == Console.WindowWidth - 1)
+        if (ballPositionX == Console.WindowWidth - 1) // Щом удари WindowWidth => Някой от играчите е спечелил, в този случай губи компютъра;
         {
-            IfLoseBallInTheMiddle();
-            ballDown = false;
+            IfSomeoneLoseSetBallInMid(); // Сетва централна позиция на топчето, след като някой е загубил;
+            ballDown = false; // задава посока на движение;
             ballUp = true;
             firstPlayerPoints++;
+            Console.SetCursorPosition(((Console.WindowWidth / 2) - 5), (Console.WindowHeight / 2) );
+            Console.Write("PLAYER WINS!");
             Console.ReadKey();//if someone lose just stop
         }
-        if (ballPositionX == 0)
+
+        if (ballPositionX == 0) // играча губи;
         {
-            IfLoseBallInTheMiddle();
-            ballDown = true;
+            IfSomeoneLoseSetBallInMid();
+            ballDown = true;// задава посока на движение;
             ballUp = true;
             secondPlayerPoints++;
+            Console.SetCursorPosition(((Console.WindowWidth / 2) - 6), (Console.WindowHeight / 2) );
+            Console.Write("COMPUTER WINS!");
             Console.ReadKey();//if someone lose just stop
         }
 
@@ -206,4 +219,3 @@ class Program
 
     }
 }
-
